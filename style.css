@@ -1,0 +1,109 @@
+*,
+*:before,
+*:after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body { 
+    background: url(https://images.unsplash.com/photo-1638613067237-b1127ef06c00?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1332&q=80) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 100vh;
+}
+
+h1 {
+    margin-top: 0px;
+    padding-top: 70px;
+}
+
+h1, h3, div, strong {
+    font-family: 'VT323', monospace;
+    text-align: center;
+}
+
+.container {
+    position: absolute;
+    width: 50%;
+    min-width: 580px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background-color: whitesmoke;
+    padding: 50px 10px;
+    border-radius: 10px;
+    display: grid;
+    justify-items: center;
+    font-family: 'VT323', monospace;
+    opacity: 80%;
+}
+
+:root {
+    --empty: #3a3a3c;
+    --wrong: #b59f3b;
+    --right: #538d4e;
+    --numColumn: 0;
+}
+
+#game {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 300px;
+}
+
+.grid {
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    grid-template-columns: repeat(var(--numColumn), auto);
+}
+
+.box {
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--empty);
+    margin: 4px;
+    color: black;
+    text-transform: uppercase;
+    display: grid;
+    place-items: center;
+    font-family: 'VT323', monospace;
+    font-size: 2.4rem;
+}
+
+.box.empty {
+    background-color: var(--empty);
+}
+
+.box.wrong {
+    background-color: var(--wrong);
+}
+
+.box.right {
+    background-color: var(--right);
+}
+
+input[type="text"] {
+    width: 150px;
+    font-weight: 600;
+    padding: 10px 0;
+    text-align: center;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 2px solid #202020;
+    font-family: 'VT323', monospace;
+}
+
+button {
+    width: 100px;
+    padding: 5px 0;
+    font-family: 'VT323', monospace;
+    border-radius: 5px;
+}
+
+.dontshow {
+    display: none;
+}
