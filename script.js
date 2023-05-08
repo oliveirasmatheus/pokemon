@@ -81,7 +81,6 @@ function registerKeyboardEvents() {
         if (state.currentCol === name.innerText.length) {
           const word = getCurrentWord();
           revealWord(word);
-          state.currentRow++;
           state.currentCol = 0;
         }
       }
@@ -150,6 +149,9 @@ function registerKeyboardEvents() {
       box.classList.add('animated');
       box.style.animationDelay = `${(i * animation_duration) / 2}ms`;
     }
+
+    state.currentRow++;
+
   
     const isWinner = state.secret === guess;
     const isGameOver = state.currentRow === 3;
@@ -160,7 +162,7 @@ function registerKeyboardEvents() {
         } else if (isGameOver) {
           alert(`Better luck next time! The word was ${state.secret}.`);
       }
-    }, 6 * animation_duration);
+    }, 5 * animation_duration);
   }
   
   function isLetter(key) {
