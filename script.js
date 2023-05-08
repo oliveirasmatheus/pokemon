@@ -1,3 +1,6 @@
+const userInput = prompt("How many pokémons do you know?");
+let numOfPokemons = parseInt(userInput);
+
 const picture = document.getElementById("picture");
 const name = document.getElementById("name");
 const type = document.getElementById("type");
@@ -9,7 +12,7 @@ const numColumn = document.getElementById("column");
 
 button.addEventListener("mousedown", (e) => {    
     e.preventDefault();
-    const pokemonId = Math.floor(Math.random() * 151) + 1;
+    const pokemonId = Math.floor(Math.random() * numOfPokemons) + 1;
     fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
      .then(response => response.json())
      .then(pokemon => {
