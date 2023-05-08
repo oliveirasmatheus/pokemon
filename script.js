@@ -9,7 +9,7 @@ const numColumn = document.getElementById("column");
 
 button.addEventListener("mousedown", (e) => {    
     e.preventDefault();
-    const pokemonId = Math.floor(Math.random() * 1100) + 1;
+    const pokemonId = Math.floor(Math.random() * 151) + 1;
     fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
      .then(response => response.json())
      .then(pokemon => {
@@ -154,8 +154,7 @@ function registerKeyboardEvents() {
     setTimeout(() => {
       if (isWinner) {
           alert('Congratulations!');
-        }
-      else if (isGameOver) {
+        } else if (isGameOver) {
           alert(`Better luck next time! The word was ${state.secret}.`);
       }
     }, 6 * animation_duration);

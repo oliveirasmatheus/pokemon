@@ -107,3 +107,49 @@ button {
 .dontshow {
     display: none;
 }
+
+/* ===========================================
+	Mobile Styles: 0px to 480 pixels
+   ===========================================
+*/
+
+@media only screen and (max-width: 480px) {
+
+    body {
+        width: auto;
+        max-width: 480px;
+        overflow-x: hidden;
+        height: auto;
+    }
+
+    .parent_cont {
+        width: auto;
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: 100%;
+        height: auto;
+        padding: 50px 0px ;
+        min-width: 100%;
+    }
+
+    h1 {
+        padding-top: 0;
+    }
+
+    .box {
+        width: 30px;
+        height: 30px;
+        border: 2px solid var(--empty);
+        margin: 2px;
+        color: black;
+        text-transform: uppercase;
+        display: grid;
+        place-items: center;
+        font-family: 'VT323', monospace;
+        font-size: 1.4rem;
+    }
+
+
+}
