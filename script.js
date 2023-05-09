@@ -56,6 +56,7 @@ function drawBox(container, row, col, letter = '') {
     box.className = 'box';
     box.id = `box${row}${col}`;
     box.textContent = letter;
+    // box.maxLength = "1";
 
     container.appendChild(box);
     return box;
@@ -74,26 +75,53 @@ function drawGrid(container) {
     container.appendChild(grid);
 }
 
-function registerKeyboardEvents() {
-    document.body.onkeydown = (e) => {
-      const key = e.key;
-      if (key === 'Enter') {
-        if (state.currentCol === name.innerText.length) {
-          const word = getCurrentWord();
-          revealWord(word);
-          state.currentCol = 0;
-        }
-      }
-      if (key === 'Backspace') {
-        removeLetter();
-      }
-      if (isLetter(key)) {
-        addLetter(key);
-      }
-  
-      updateGrid();
-    };
+const inputField = document.getElementById("input-field");
+
+inputField.addEventListener("keydown", function(event) {
+  const key = event.key;
+
+  if (key === 'Enter') {
+    if (state.currentCol === name.innerText.length) {
+      const word = getCurrentWord();
+      revealWord(word);
+      state.currentCol = 0;
+    }
   }
+  if (key === 'Backspace') {
+    removeLetter();
+  }
+  if (isLetter(key)) {
+    addLetter(key);
+  }
+
+  updateGrid();
+
+
+  // Do something with the pressed key
+});
+
+
+
+// function registerKeyboardEvents() {
+//     document.body.onkeydown = (e) => {
+//       const key = e.key;
+//       if (key === 'Enter') {
+//         if (state.currentCol === name.innerText.length) {
+//           const word = getCurrentWord();
+//           revealWord(word);
+//           state.currentCol = 0;
+//         }
+//       }
+//       if (key === 'Backspace') {
+//         removeLetter();
+//       }
+//       if (isLetter(key)) {
+//         addLetter(key);
+//       }
+  
+//       updateGrid();
+//     };
+//   }
   
   function getCurrentWord() {
     return state.grid[state.currentRow].reduce((prev, curr) => prev + curr);
@@ -197,7 +225,7 @@ function startup() {
     const game = document.getElementById('game');
     drawGrid(game);
 
-    registerKeyboardEvents();
+    // registerKeyboardEvents();
 }
 
 

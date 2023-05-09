@@ -69,7 +69,7 @@ h1, h3, div, strong {
     color: black;
     text-transform: uppercase;
     display: grid;
-    place-items: center;
+    text-align: center;
     font-family: 'VT323', monospace;
     font-size: 2.4rem;
 }
@@ -84,17 +84,6 @@ h1, h3, div, strong {
 
 .box.right {
     background-color: var(--right);
-}
-
-input[type="text"] {
-    width: 150px;
-    font-weight: 600;
-    padding: 10px 0;
-    text-align: center;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border: 2px solid #202020;
-    font-family: 'VT323', monospace;
 }
 
 button {
@@ -147,7 +136,7 @@ button {
         color: black;
         text-transform: uppercase;
         display: grid;
-        place-items: center;
+        text-align: center;
         font-family: 'VT323', monospace;
         font-size: 1.4rem;
     }
