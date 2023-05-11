@@ -13,6 +13,7 @@ body {
     -o-background-size: cover;
     background-size: cover;
     height: 100vh;
+    z-index: 4;
 }
 
 h1 {
@@ -39,6 +40,7 @@ h1, h3, div, strong {
     justify-items: center;
     font-family: 'VT323', monospace;
     opacity: 80%;
+    z-index: 5;
 }
 
 :root {
@@ -53,6 +55,16 @@ h1, h3, div, strong {
     place-items: center;
     width: 100%;
     height: 300px;
+}
+
+#input-field {
+    text-decoration: none;
+    color: whitesmoke;
+    background-color: whitesmoke;
+    opacity: 80%;
+    border: none;
+    z-index: 3;
+    outline: none;
 }
 
 .grid {
