@@ -1,5 +1,44 @@
-const userInput = prompt("How many pokémons do you know?");
-let numOfPokemons = parseInt(userInput);
+const NUMBER_OF_GUESSES = 3;
+let guessesRemaining = NUMBER_OF_GUESSES;
+let currentGuess = [];
+let nextLetter = 0;
+let rightGuessString;
+let nextPoke = document.getElementById("nextBtn");
+
+toastr.options = {
+  timeOut: 0,
+  extendedTimeOut: 100,
+  tapToDismiss: true,
+  debug: false,
+  fadeOut: 10,
+  positionClass: "toast-top-center"
+};
+
+var radios = document.getElementsByName("myRadio");
+for (var i = 0; i < radios.length; i++) {
+  radios[i].addEventListener("click", function() {
+    for (var j = 0; j < radios.length; j++) {
+      if (radios[j] !== this) {
+        radios[j].checked = false;
+      }
+    }
+  });
+}
+
+
+function setSelectedValue() {
+  const selectedValue = document.querySelector('input[name="myRadio"]:checked').value;
+  sessionStorage.setItem('selectedValue', selectedValue);
+  window.location.href = 'game.html';
+}
+
+function selectGeneration() {
+  window.location.href = 'poke.html';
+}
+
+const selectedValue = sessionStorage.getItem('selectedValue');
+const pokemonGroup = parseInt(selectedValue);
+
 
 const picture = document.getElementById("picture");
 const name = document.getElementById("name");
@@ -10,243 +49,272 @@ const id = document.getElementById("id");
 const button = document.getElementById("myBtn");
 const numColumn = document.getElementById("column");
 
-button.addEventListener("mousedown", (e) => {    
-    e.preventDefault();
-    const pokemonId = Math.floor(Math.random() * numOfPokemons) + 1;
-    fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
-     .then(response => response.json())
-     .then(pokemon => {
-        console.log(pokemon)
-        name.innerHTML = pokemon['name']
-        numColumn.innerHTML = name.innerText.length
-        id.innerText = pokemon['id']
-        type.innerText = pokemon['types'][0]['type']['name']
-        ability.innerText = pokemon['abilities'][0]['ability']['name']
-        weight.innerText = pokemon['weight']
-        picture.src = pokemon['sprites']['front_default']
-        var r = document.querySelector(':root');
-        r.style.setProperty('--numColumn', name.innerText.length)
 
-        startup();
+button.addEventListener("mousedown", runGame);
+nextPoke.addEventListener("mousedown", runGame);
 
-        ;})
+function runGame() {
+  toastr.clear();
+  cleanKeyBoard();
+
+  nextPoke.disabled = false;
+  guessesRemaining = NUMBER_OF_GUESSES;
+  currentGuess = [];
+  nextLetter = 0;
+
+  let pokemonId = 0;
+
+  if (pokemonGroup === 1) { // 1 to 151
+   pokemonId = Math.floor(Math.random() * 151) + 1;
+
+  } else if (pokemonGroup === 2) { // 152 to 251
+    pokemonId = Math.floor(Math.random() * 251) + 152;
+
+  } else if (pokemonGroup === 3) { // 252 to 386
+    pokemonId = Math.floor(Math.random() * 386) + 252;
+    
+  } else if (pokemonGroup === 4) { // 387 to 493
+    pokemonId = Math.floor(Math.random() * 493) + 387;
+    
+  } else if (pokemonGroup === 5) { // 494 to 649
+    pokemonId = Math.floor(Math.random() * 649) + 494;
+    
+  } else if (pokemonGroup === 6) { // 650 to 721
+    pokemonId = Math.floor(Math.random() * 721) + 650;
+    
+  } else if (pokemonGroup === 7) { // 722 to 809
+    pokemonId = Math.floor(Math.random() * 809) + 722;
+    
+  } else if (pokemonGroup === 8) { // 810 to 905
+    pokemonId = Math.floor(Math.random() * 905) + 810;
+    
+  } else if (pokemonGroup === 9) { // 906 to 1016
+    pokemonId = Math.floor(Math.random() * 1016) + 906;
+    
+  } else if (pokemonGroup === 10) { // all
+    pokemonId = Math.floor(Math.random() * 1016) + 1;
+    
+  }
+
+  fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`)
+   .then(response => response.json())
+   .then(pokemon => {
+      console.log(pokemon)
+      name.innerHTML = pokemon['name']
+      numColumn.innerHTML = name.innerText.length
+      id.innerText = pokemon['id']
+      type.innerText = pokemon['types'][0]['type']['name']
+      ability.innerText = pokemon['abilities'][0]['ability']['name']
+      weight.innerText = pokemon['weight']
+      picture.src = pokemon['sprites']['front_default']
+      var r = document.querySelector(':root');
+      r.style.setProperty('--numColumn', name.innerText.length)
+      rightGuessString = name.innerText;
+
+      initBoard();
+
+
+      ;})
+}
+
+
+function initBoard() {
+
+  const oldGrid = document.querySelectorAll('.letter-row');
+
+  for (let i = 0; i < oldGrid.length; i++) {
+    if (oldGrid[i]) {
+      oldGrid[i].remove();
+    }
+  }
+
+  let board = document.getElementById("game-board");
+
+  for (let i = 0; i < 3; i++) {
+      let row = document.createElement("div")
+      row.className = "letter-row"
+      
+      for (let j = 0; j < name.innerText.length; j++) {
+          let box = document.createElement("div")
+          box.className = "letter-box"
+          box.maxLength = 1;
+          row.appendChild(box)
+      }
+
+      board.appendChild(row)
+  }
+}
+
+
+
+document.addEventListener("keyup", (e) => {
+
+  if (guessesRemaining === 0) {
+      return
+  }
+
+  let pressedKey = String(e.key)
+  if (pressedKey === "Backspace" && nextLetter !== 0) {
+      deleteLetter()
+      return
+  }
+
+  if (pressedKey === "Enter") {
+      checkGuess()
+      return
+  }
+
+  let found = pressedKey.match(/[a-z]/gi)
+  if (!found || found.length > 1) {
+      return
+  } else {
+      insertLetter(pressedKey)
+  }
 })
 
+function insertLetter (pressedKey) {
+  if (nextLetter === name.innerText.length) {
+      return
+  }
+  pressedKey = pressedKey.toLowerCase()
 
-let state = {
-    secret: name.innerText,
-    grid: Array(3)
-        .fill()
-        .map(() => Array(name.innerText.length).fill('')),
-    currentRow: 0,
-    currentCol: 0,
-};
-
-function updateGrid() {
-    for (let i = 0; i < state.grid.length; i++) {
-        for (let j = 0; j < state.grid[i].length; j++) {
-            const box = document.getElementById(`box${i}${j}`);
-            box.textContent = state.grid[i][j];
-        }
-    }
+  let row = document.getElementsByClassName("letter-row")[3 - guessesRemaining]
+  let box = row.children[nextLetter]
+  animateCSS(box, "pulse")
+  box.textContent = pressedKey
+  box.classList.add("filled-box")
+  currentGuess.push(pressedKey)
+  nextLetter += 1
 }
 
-function drawBox(container, row, col, letter = '') {
-    const box = document.createElement('input');
-    box.className = 'box';
-    box.id = `box${row}${col}`;
-    box.textContent = letter;
-    // box.maxLength = "1";
-
-    container.appendChild(box);
-    return box;
+function deleteLetter () {
+  let row = document.getElementsByClassName("letter-row")[3 - guessesRemaining]
+  let box = row.children[nextLetter - 1]
+  box.textContent = ""
+  box.classList.remove("filled-box")
+  currentGuess.pop()
+  nextLetter -= 1
 }
 
-function drawGrid(container) {
-    const grid = document.createElement('div');
-    grid.className = 'grid';
+function checkGuess () {
+  let row = document.getElementsByClassName("letter-row")[3 - guessesRemaining]
+  let guessString = ''
+  let rightGuess = Array.from(rightGuessString)
 
-    for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < name.innerText.length; col++) {
-            drawBox(grid, row, col);
-        }
-    }
+  for (const val of currentGuess) {
+      guessString += val
+  }
 
-    container.appendChild(grid);
-}
-
-// function initBoard() {
-//   let board = document.getElementById("game-board");
-
-//   for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
-//       let row = document.createElement("div")
-//       row.className = "letter-row"
+  if (guessString.length != name.innerText.length) {
+      toastr.error("Not enough letters!")
+      return
+  }
+  
+  for (let i = 0; i < name.innerText.length; i++) {
+      let letterColor = ''
+      let box = row.children[i]
+      let letter = currentGuess[i]
       
-//       for (let j = 0; j < 5; j++) {
-//           let box = document.createElement("div")
-//           box.className = "letter-box"
-//           row.appendChild(box)
-//       }
+      let letterPosition = rightGuess.indexOf(currentGuess[i])
 
-//       board.appendChild(row)
-//   }
-// }
+      if (letterPosition === -1) {
+          letterColor = 'lightgrey'
+      } else {
+          if (currentGuess[i] === rightGuess[i]) {
+              letterColor = 'lightgreen'
+          } else {
+              letterColor = 'khaki'
+          }
 
-// initBoard()
-
-
-
-const inputField = document.getElementById("input-field");
-
-inputField.addEventListener("keydown", function(event) {
-  const key = event.key;
-
-  if (key === 'Enter') {
-    if (state.currentCol === name.innerText.length) {
-      const word = getCurrentWord();
-      revealWord(word);
-      state.currentCol = 0;
-    }
-  }
-  if (key === 'Backspace') {
-    removeLetter();
-  }
-  if (isLetter(key)) {
-    addLetter(key);
-  }
-
-  updateGrid();
-
-
-  // Do something with the pressed key
-});
-
-
-
-// function registerKeyboardEvents() {
-//     document.body.onkeydown = (e) => {
-//       const key = e.key;
-//       if (key === 'Enter') {
-//         if (state.currentCol === name.innerText.length) {
-//           const word = getCurrentWord();
-//           revealWord(word);
-//           state.currentCol = 0;
-//         }
-//       }
-//       if (key === 'Backspace') {
-//         removeLetter();
-//       }
-//       if (isLetter(key)) {
-//         addLetter(key);
-//       }
-  
-//       updateGrid();
-//     };
-//   }
-  
-  function getCurrentWord() {
-    return state.grid[state.currentRow].reduce((prev, curr) => prev + curr);
-  }
-  
-  function isWordValid(word) {
-    return name.innerText.includes(word);
-  }
-  
-  function getNumOfOccurrencesInWord(word, letter) {
-    let result = 0;
-    for (let i = 0; i < word.length; i++) {
-      if (word[i] === letter) {
-        result++;
+          rightGuess[letterPosition] = "#"
       }
-    }
-    return result;
+
+      let delay = 250 * i
+      setTimeout(()=> {
+          animateCSS(box, 'flipInx')
+          //shade box
+          box.style.backgroundColor = letterColor
+          shadeKeyBoard(letter, letterColor)
+      }, delay)
   }
-  
-  function getPositionOfOccurrence(word, letter, position) {
-    let result = 0;
-    for (let i = 0; i <= position; i++) {
-      if (word[i] === letter) {
-        result++;
+
+  if (guessString === rightGuessString) {
+      toastr.success("You guessed right! Go to next Pokemon!")
+      guessesRemaining = 0
+      return
+  } else {
+      guessesRemaining -= 1;
+      currentGuess = [];
+      nextLetter = 0;
+
+      if (guessesRemaining === 0) {
+          toastr.error("You've run out of guesses! Game over!")
+          toastr.info(`The right word was: "${rightGuessString}"`)
+          nextPoke.disabled = true;
+          
       }
-    }
-    return result;
   }
-  
-  function revealWord(guess) {
-    const row = state.currentRow;
-    const animation_duration = 500; // ms
-  
-    for (let i = 0; i < name.innerText.length; i++) {
-      const box = document.getElementById(`box${row}${i}`);
-      const letter = box.textContent;
-      const numOfOccurrencesSecret = getNumOfOccurrencesInWord(
-        state.secret,
-        letter
-      );
-      const numOfOccurrencesGuess = getNumOfOccurrencesInWord(guess, letter);
-      const letterPosition = getPositionOfOccurrence(guess, letter, i);
-  
-      setTimeout(() => {
-        if (letter === state.secret[i]) {
-          box.classList.add('right');
-        } else if (state.secret.includes(letter)) {
-          box.classList.add('wrong');
-        }
-        
-      }, ((i + 1) * animation_duration) / 2);
-  
-      box.classList.add('animated');
-      box.style.animationDelay = `${(i * animation_duration) / 2}ms`;
-    }
-
-    state.currentRow++;
-
-  
-    const isWinner = state.secret === guess;
-    const isGameOver = state.currentRow === 3;
-  
-    setTimeout(() => {
-      if (isWinner) {
-          alert('Congratulations!');
-        } else if (isGameOver) {
-          alert(`Better luck next time! The word was ${state.secret}.`);
-      }
-    }, 5 * animation_duration);
-  }
-  
-  function isLetter(key) {
-    return key.length === 1 && key.match(/[a-z]/i);
-  }
-  
-  function addLetter(letter) {
-    if (state.currentCol === name.innerText.length) return;
-    state.grid[state.currentRow][state.currentCol] = letter;
-    state.currentCol++;
-  }
-  
-  function removeLetter() {
-    if (state.currentCol === 0) return;
-    state.grid[state.currentRow][state.currentCol - 1] = '';
-    state.currentCol--;
-  }
-
-function startup() {
-    state = {
-      secret: name.innerText,
-      grid: Array(3)
-          .fill()
-          .map(() => Array(name.innerText.length).fill('')),
-      currentRow: 0,
-      currentCol: 0,
-    };
-    
-    const oldGrid = document.querySelector('.grid');
-    if (oldGrid) oldGrid.remove();
-
-    const game = document.getElementById('game');
-    drawGrid(game);
-
-    // registerKeyboardEvents();
 }
 
+function shadeKeyBoard(letter, color) {
+  for (const elem of document.getElementsByClassName("keyboard-button")) {
+      if (elem.textContent === letter) {
+          let oldColor = elem.style.backgroundColor
+          if (oldColor === 'lightgreen') {
+              return
+          } 
+
+          if (oldColor === 'khaki' && color !== 'lightgreen') {
+              return
+          }
+
+          elem.style.backgroundColor = color
+          break
+      }
+  }
+}
+
+function cleanKeyBoard() {
+  const keys = document.querySelectorAll(".keyboard-button");
+
+  for (let i = 0; i < keys.length; i++) {
+    keys[i].style.backgroundColor = 'buttonface';
+
+  }
+}
+
+document.getElementById("keyboard-cont").addEventListener("click", (e) => {
+  const target = e.target
+  
+  if (!target.classList.contains("keyboard-button")) {
+      return
+  }
+  let key = target.textContent
+
+  if (key === "Del") {
+      key = "Backspace"
+  } 
+
+  document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}))
+})
+
+const animateCSS = (element, animation, prefix = 'animate__') =>
+  // We create a Promise and return it
+  new Promise((resolve, reject) => {
+    const animationName = `${prefix}${animation}`;
+    // const node = document.querySelector(element);
+    const node = element
+    node.style.setProperty('--animate-duration', '0.3s');
+    
+    node.classList.add(`${prefix}animated`, animationName);
+
+    // When the animation ends, we clean the classes and resolve the Promise
+    function handleAnimationEnd(event) {
+      event.stopPropagation();
+      node.classList.remove(`${prefix}animated`, animationName);
+      resolve('Animation ended');
+    }
+
+    node.addEventListener('animationend', handleAnimationEnd, {once: true});
+});
 
